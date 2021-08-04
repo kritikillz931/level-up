@@ -3,6 +3,7 @@ import { GameContext } from "./GameProvider.js"
 import { useHistory } from 'react-router-dom'
 
 
+
 export const GameForm = () => {
     const history = useHistory()
     const { createGame, getGameTypes, gameTypes } = useContext(GameContext)
@@ -13,10 +14,10 @@ export const GameForm = () => {
         provide some default values.
     */
     const [currentGame, setCurrentGame] = useState({
-        skillLevel: 1,
         numberOfPlayers: 0,
-        title: "",
+        name: "",
         maker: "",
+        description: "",
         gameTypeId: 0
     })
 
@@ -38,36 +39,11 @@ export const GameForm = () => {
 
         One hint: [event.target.name]
     */
-    const changeGameTitleState = (event) => {
+    const handleControlledInput = (event) => {
         const newGameState = { ...currentGame }
-        newGameState.title = event.target.value
+        newGameState[event.target.name] = event.target.value
         setCurrentGame(newGameState)
     }
-
-    const changeGameMakerState = (event) => {
-        const newGameState = { ...currentGame }
-        newGameState.maker = event.target.value
-        setCurrentGame(newGameState)
-    }
-
-    const changeGamePlayersState = (event) => {
-        const newGameState = { ...currentGame }
-        newGameState.numberOfPlayers = event.target.value
-        setCurrentGame(newGameState)
-    }
-
-    const changeGameSkillLevelState = (event) => {
-        const newGameState = { ...currentGame }
-        newGameState.skillLevel = event.target.value
-        setCurrentGame(newGameState)
-    }
-
-    const changeGameTypeState = (event) => {
-        const newGameState = { ...currentGame }
-        newGameState.gameTypeId = event.target.value
-        setCurrentGame(newGameState)
-    }
-    /* REFACTOR CHALLENGE END */
 
     return (
         <form className="gameForm">
@@ -79,11 +55,36 @@ export const GameForm = () => {
                     }}
                 >Register New Game</button>
                 <div className="form-group">
-                    <label htmlFor="title">Title: </label>
-                    <input type="text" name="title" required autoFocus className="form-control"
-                        value={currentGame.title}
-                        onChange={changeGameTitleState}
+                    <label htmlFor="name">Name: </label>
+                    <input type="text" name="name" required autoFocus className="form-control"
+                        defaultValue={currentGame.name}
+                        onChange={handleControlledInput}
                     />
+                    <label htmlFor="name">Players: </label>
+                    <input type="number" name="numberOfPlayers" required autoFocus className="form-control"
+                        defaultValue={currentGame.numberOfPlayers}
+                        onChange={handleControlledInput}
+                    />
+                    <label htmlFor="name">Maker: </label>                    
+                    <input type="text" name="maker" required autoFocus className="form-control"
+                        defaultValue={currentGame.maker}
+                        onChange={handleControlledInput}
+                    />
+                    <label htmlFor="name">Description: </label>                    
+                    <input type="text" name="description" required autoFocus className="form-control"
+                        value={currentGame.description}
+                        onChange={handleControlledInput}
+                    />
+                    <fieldset>
+				<div className="form-group">
+					<label htmlFor="gameType">Game Type: </label>
+					<select name="gameTypeId"onChange={handleControlledInput}>
+						{gameTypes.map((type) => {
+							return <option value={type.id}>{type.label}</option>;
+						})}
+					</select>
+				</div>
+			</fieldset>
                 </div>
             </fieldset>
 
@@ -96,9 +97,9 @@ export const GameForm = () => {
 
                     const game = {
                         maker: currentGame.maker,
-                        title: currentGame.title,
+                        name: currentGame.name,
                         numberOfPlayers: parseInt(currentGame.numberOfPlayers),
-                        skillLevel: parseInt(currentGame.skillLevel),
+                        description: currentGame.description,
                         gameTypeId: parseInt(currentGame.gameTypeId)
                     }
 

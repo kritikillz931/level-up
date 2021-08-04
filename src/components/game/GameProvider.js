@@ -7,7 +7,7 @@ export const GameProvider = (props) => {
     const [ gameTypes, setTypes ] = useState([])
 
     const getGames = () => {
-        return fetch("http://localhost:8000/gametype", {
+        return fetch("http://localhost:8000/games", {
             headers:{
                 "Authorization": `Token ${localStorage.getItem("lu_token")}`
             }
@@ -17,13 +17,15 @@ export const GameProvider = (props) => {
     }
 
     const createGame = (game) => {
-        return fetch("http://localhost:8000/games/new", { 
+        return fetch("http://localhost:8000/games", { 
             method: "POST",
             headers:{
-                "Authorization": `Token ${localStorage.getItem("lu_token")}`
-            }
+                "Authorization": `Token ${localStorage.getItem("lu_token")}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(game) 
         })
-            .then(response => response.json(game))
+            .then(getGames)
             
     }
     
