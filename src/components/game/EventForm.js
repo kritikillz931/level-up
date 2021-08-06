@@ -1,55 +1,126 @@
 
-import React, { useContext, useState, useEffect } from "react"
-import { useHistory } from "react-router-dom"
-import { EventContext } from "./EventProvider.js"
-
+import React, { useContext, useState, useEffect } from "react";
+import { EventContext } from "./EventProvider.js";
+import { useHistory } from "react-router-dom";
+import { GameContext } from "./GameProvider.js";
 
 export const EventForm = () => {
-    const history = useHistory()
-    const { createEvent, events, getEvents } = useContext(EventContext)
-    const [currentEvent, setEvent] = useState({})
-    const [games, setGames] = useState([])
+	const { createEvent } = useContext(EventContext);
+	const { games, getGames } = useContext(GameContext);
+	const history = useHistory();
 
-    useEffect(() => {
-        getEvents()// Get all existing games from API
-    }, [])
+	const [currentEvent, setCurrentEvent] = useState({
+		name: "",
+		game: 0,
+		description: "",
+		date: "",
+		time: "",
+	});
 
-    const changeEventState = (domEvent) => {
-        setEvent(domEvent)
-    }
+	useEffect(() => {
+		getGames();
+	}, []);
 
-    return (
-        <form className="gameForm">
-            <h2 className="gameForm__title">Schedule New Event</h2>
-            <fieldset>
-                <div className="form-group">
-                    <p>fff</p>
-                    <label htmlFor="gameId">Game: </label>
-                    <select name="gameId" className="form-control"
-                        value={ currentEvent.gameId }
-                        onChange={ changeEventState }>
-                        <option value="0">Select a game...</option>
-                        {
-                            games.map(game => (
-                                <option></option>
-                            ))
-                        }
-                    </select>
-                </div>
-            </fieldset>
+	const changeEventState = (event) => {
+		const newEventState = { ...currentEvent };
 
-            {/* Create the rest of the input fields */}
+		newEventState[event.target.name] = event.target.value;
 
-            <button type="submit"
-                onClick={evt => {
-                    evt.preventDefault()
-                    createEvent()
-                    // Create the event
+		setCurrentEvent(newEventState);
+	};
 
+	return (
+		<form className="eventForm">
+			<h2 className="eventForm__name">New Event</h2>
+			<fieldset>
+				<div className="form-group">
+					<select name="game" onChange={changeEventState} style={{padding: ".5rem"}}>
+            <option style={{fontStyle: "italic"}}>Choose Game</option>
+						{games.map((game) => {
+							return <option value={game.id}>{game.name}</option>;
+						})}
+					</select>
+				</div>
+			</fieldset>
+			<fieldset>
+				<div className="form-group">
+					<input
+						placeholder="Name"
+						type="text"
+						name="name"
+						required
+						autoFocus
+						className="gameFormSet"
+						onChange={changeEventState}
+					/>
+				</div>
+			</fieldset>
 
-                    // Once event is created, redirect user to event list
-                }}
-                className="btn btn-primary">Create Event</button>
-        </form>
-    )
-}
+			<fieldset>
+				<div className="form-group">
+					<input
+						type="text"
+						placeholder="Description"
+						name="description"
+						required
+						autoFocus
+						className="gameFormSet"
+						value={currentEvent.maker}
+						onChange={changeEventState}
+					/>
+				</div>
+			</fieldset>
+
+			<fieldset>
+				<div className="form-group">
+					<label htmlFor="date">Date: </label>
+					<input
+						type="date"
+						name="date"
+						required
+						autoFocus
+						className="gameFormSet"
+						onChange={changeEventState}
+					/>
+				</div>
+			</fieldset>
+			<fieldset>
+				<div className="form-group">
+					<label htmlFor="time">Time: </label>
+					<input
+						type="time"
+						name="time"
+						required
+						autoFocus
+						className="gameFormSet"
+						onChange={changeEventState}
+					/>
+				</div>
+			</fieldset>
+
+			{/* You create the rest of the input fields for each Event property */}
+
+			<button
+				type="submit"
+				onClick={(evt) => {
+					// Prevent form from being submitted
+					evt.preventDefault();
+
+					const Event = {
+						name: currentEvent.name,
+						game: currentEvent.game,
+						description: currentEvent.description,
+						date: currentEvent.date,
+						time: currentEvent.time,
+					};
+
+					// Send POST request to your API
+					createEvent(Event).then(() => history.push("/events"));
+				}}
+				className="eventFormSubmitButton"
+			>
+				Create
+			</button>
+		</form>
+	);
+};
