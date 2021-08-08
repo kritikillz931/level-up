@@ -1,10 +1,12 @@
 import React, { useContext, useEffect } from "react"
+import { useHistory } from "react-router-dom"
 import { GameContext } from "./GameProvider.js"
+
 
 
 export const GameList = (props) => {
     const { games, getGames } = useContext(GameContext)
-
+    const history = useHistory()
     useEffect(() => {
         getGames()
     }, [])
@@ -15,6 +17,12 @@ export const GameList = (props) => {
                 games.map(game => {
                     return <section key={`game--${game.id}`} className="game">
                         <div className="game__name">{game.name} by {game.maker}</div>
+                        <div className="game__edit">
+                            <button className="btn btn-3"
+                                    onClick={e => history.push(`/games/${game.id}/edit`)}>Edit
+
+                            </button>
+                        </div>
                         <div className="game__players">{game.number_of_players} players needed</div>
                         <div className="game__description">game description {game.description}</div>
                     </section>
