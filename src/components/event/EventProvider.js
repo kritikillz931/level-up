@@ -16,25 +16,23 @@ export const EventProvider = (props) => {
     }
 
     const createEvent = (event) => {
-        return fetch("http://localhost:8000/events", { 
-            method: "POST",
-            headers:{
-                "Authorization": `Token ${localStorage.getItem("lu_token")}`,
-                "Content-Type": "application/json"
+        return fetch("http://localhost:8000/events", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Token ${localStorage.getItem('lu_token')}`
             },
             body: JSON.stringify(event)
-        })
-            .then(getEvents)
+        }).then(getEvents)
     }
 
     const joinEvent = eventId => {
-        return fetch(`http://localhost:8000/events/${ eventId }/signup`, {
+        return fetch(`http://localhost:8000/events/${eventId}/signup`, {
             method: "POST",
             headers:{
                 "Authorization": `Token ${localStorage.getItem("lu_token")}`
             }
-        })
-            .then(getEvents)
+        }).then(getEvents)
     }
 
     const leaveEvent = eventId => {
@@ -44,7 +42,6 @@ export const EventProvider = (props) => {
                 "Authorization": `Token ${localStorage.getItem("lu_token")}`
             }
         })
-
             .then(getEvents)
     }
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useContext } from "react"
 import { ProfileContext } from "./ProfileProvider.js"
+// import "./Profile.css"
 
 
 export const Profile = () => {
@@ -19,7 +20,7 @@ export const Profile = () => {
                     <h3>Your Info</h3>
                 </header>
                 <div className="profile__name">
-                    Welcome: {profile.gamer && profile.gamer.user.first_name} {profile.gamer && profile.gamer.user.last_name}
+                    Welcome: {profile.gamer?.user.first_name} {profile.gamer && profile.gamer.user.last_name}
                 </div>
                 <div className="profile__username">Username: {profile.gamer && profile.gamer.user.username}</div>
                 <div className="profile__bio">About you: {profile.gamer && profile.gamer.bio}</div>
@@ -32,7 +33,7 @@ export const Profile = () => {
                     {
                         profile.events.map(event => {
                             return <div key={event.id} className="registration">
-                                <div className="registration__game">{event.game.name}</div>
+                                <div className="registration__game">{event.game.title}</div>
                                 <div>{event.description}</div>
                                 <div>
                                     {event.date} @ {event.time}

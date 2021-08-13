@@ -1,23 +1,25 @@
 import React, { useContext, useState, useEffect } from "react"
 import { GameContext } from "./GameProvider.js"
 import { useHistory } from 'react-router-dom'
-
+import { useParams } from "react-router-dom/cjs/react-router-dom.min"
 
 
 export const GameForm = () => {
     const history = useHistory()
-    const { createGame, getGameTypes, gameTypes } = useContext(GameContext)
-
+    const { createGame, getGameTypes, gameTypes, getGame, updateGame } = useContext(GameContext)
+    const { gameId } = useParams()
+    const [game, setGame] = useState({})
+    const [isEdit, setIsEdit] = useState(false)
     /*
         Since the input fields are bound to the values of
         the properties of this state variable, you need to
         provide some default values.
     */
     const [currentGame, setCurrentGame] = useState({
+        skillLevel: 1,
         numberOfPlayers: 0,
         name: "",
         maker: "",
-        description: "",
         gameTypeId: 0
     })
 
@@ -29,64 +31,134 @@ export const GameForm = () => {
         getGameTypes()
     }, [])
 
+    useEffect(() => {
+        console.log('gameId', typeof gameId)
+        if (gameId) {
+            setIsEdit(true)
+            getGame(gameId).then((data) => {
+                console.log(data)
+                setCurrentGame({
+                    numberOfPlayers: data.number_of_players,
+                    name: data.name,
+                    gameTypeId: data.game_type,
+                    maker: data.maker,
+                    skillLevel: data.skill_level,
+                    description: data.description
+                })
+            })
+        }
+    }, [gameId])
+
     /*
         REFACTOR CHALLENGE START
-
         Can you refactor this code so that all property
         state changes can be handled with a single function
         instead of five functions that all, largely, do
         the same thing?
-
         One hint: [event.target.name]
     */
-    const handleControlledInput = (event) => {
+    const changeGameTitleState = (event) => {
         const newGameState = { ...currentGame }
-        newGameState[event.target.name] = event.target.value
+        newGameState.name = event.target.value
         setCurrentGame(newGameState)
     }
+
+    const changeGameMakerState = (event) => {
+        const newGameState = { ...currentGame }
+        newGameState.maker = event.target.value
+        setCurrentGame(newGameState)
+    }
+
+    const changeGamePlayersState = (event) => {
+        const newGameState = { ...currentGame }
+        newGameState.numberOfPlayers = event.target.value
+        setCurrentGame(newGameState)
+    }
+
+    const changeGameSkillLevelState = (event) => {
+        const newGameState = { ...currentGame }
+        newGameState.skillLevel = event.target.value
+        setCurrentGame(newGameState)
+    }
+
+    const changeGameTypeState = (event) => {
+        const newGameState = { ...currentGame }
+        newGameState.gameTypeId = event.target.value
+        setCurrentGame(newGameState)
+    }
+
+    const changeDescriptionState = (event) => {
+        const newGameState = { ...currentGame }
+        newGameState.description = event.target.value
+        setCurrentGame(newGameState)
+    }
+    /* REFACTOR CHALLENGE END */
 
     return (
         <form className="gameForm">
             <h2 className="gameForm__title">Register New Game</h2>
             <fieldset>
-                <button className="btn btn-2 btn-sep icon-create"
-                    onClick={() => {
-                        history.push({ pathname: "/games/new" })
-                    }}
-                >Register New Game</button>
                 <div className="form-group">
-                    <label htmlFor="name">Name: </label>
-                    <input type="text" name="name" required autoFocus className="form-control"
-                        defaultValue={currentGame.name}
-                        onChange={handleControlledInput}
+                    <label htmlFor="title">Title: </label>
+                    <input type="text" name="title" required autoFocus className="form-control"
+                        value={currentGame.name}
+                        onChange={changeGameTitleState}
                     />
-                    <label htmlFor="name">Players: </label>
-                    <input type="number" name="numberOfPlayers" required autoFocus className="form-control"
-                        defaultValue={currentGame.numberOfPlayers}
-                        onChange={handleControlledInput}
-                    />
-                    <label htmlFor="name">Maker: </label>                    
-                    <input type="text" name="maker" required autoFocus className="form-control"
-                        defaultValue={currentGame.maker}
-                        onChange={handleControlledInput}
-                    />
-                    <label htmlFor="name">Description: </label>                    
-                    <input type="text" name="description" required autoFocus className="form-control"
-                        value={currentGame.description}
-                        onChange={handleControlledInput}
-                    />
-                    <fieldset>
-				<div className="form-group">
-					<label htmlFor="gameType">Game Type: </label>
-					<select name="gameTypeId"onChange={handleControlledInput}>
-						{gameTypes.map((type) => {
-							return <option value={type.id}>{type.label}</option>;
-						})}
-					</select>
-				</div>
-			</fieldset>
                 </div>
             </fieldset>
+
+            <fieldset>
+                <div className="form-group">
+                    <label htmlFor="description">description: </label>
+                    <input type="text" name="description" required autoFocus className="form-control"
+                        value={currentGame.description}
+                        onChange={changeDescriptionState}
+                    />
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <div className="form-group">
+                    <label htmlFor="maker">maker: </label>
+                    <input type="text" name="maker" required autoFocus className="form-control"
+                        value={currentGame.maker}
+                        onChange={changeGameMakerState}
+                    />
+                </div>
+            </fieldset>
+            <fieldset>
+                <div className="form-group">
+                    <label htmlFor="numberOfPlayers">numberOfPlayers: </label>
+                    <input type="text" name="numberOfPlayers" required autoFocus className="form-control"
+                        value={currentGame.numberOfPlayers}
+                        onChange={changeGamePlayersState}
+                    />
+                </div>
+            </fieldset>a
+            <fieldset>
+                <div className="form-group">
+                    <label htmlFor="skillLevel">skillLevel: </label>
+                    <input type="text" name="skillLevel" required autoFocus className="form-control"
+                        value={currentGame.skillLevel}
+                        onChange={changeGameSkillLevelState}
+                    />
+                </div>
+            </fieldset>
+            <fieldset>
+                <div className="form-group">
+                    <label>Game Type</label>
+                    <select onChange={changeGameTypeState} value={currentGame.gameTypeId}>
+                        <option>Choose a game type</option>
+                        {
+                            gameTypes.map(gameType =>
+                                (
+                                    <option key={gameType.id} value={gameType.id}>{gameType.label}</option>
+                                ))
+                        }
+                    </select>
+                </div>
+            </fieldset>
+
 
             {/* You create the rest of the input fields for each game property */}
 
@@ -99,13 +171,19 @@ export const GameForm = () => {
                         maker: currentGame.maker,
                         name: currentGame.name,
                         numberOfPlayers: parseInt(currentGame.numberOfPlayers),
-                        description: currentGame.description,
-                        gameTypeId: parseInt(currentGame.gameTypeId)
+                        skillLevel: parseInt(currentGame.skillLevel),
+                        gameTypeId: parseInt(currentGame.gameTypeId),
+                        description: currentGame.description
                     }
 
                     // Send POST request to your API
-                    createGame(game)
-                        .then(() => history.push("/games"))
+                    if (isEdit) {
+                        game.id = gameId
+                        updateGame(game).then(() => history.push("/"))
+                    } else {
+                        createGame(game)
+                            .then(() => history.push("/"))
+                    }
                 }}
                 className="btn btn-primary">Create</button>
         </form>

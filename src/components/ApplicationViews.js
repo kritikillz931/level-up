@@ -1,13 +1,14 @@
 import React from "react"
 import { Route } from "react-router-dom"
-import { EventList } from "./game/EventList.js"
 import { GameList } from "./game/GameList.js"
 import { GameProvider } from "./game/GameProvider.js"
-import { EventProvider } from "./game/EventProvider.js"
+import { EventProvider } from './event/EventProvider'
+import { EventList } from "./event/EventList.js"
 import { GameForm } from "./game/GameForm.js"
-import { EventForm } from "./game/EventForm.js"
-import { ProfileProvider } from "./game/ProfileProvider.js"
-import { Profile } from "./game/ProfileForm.js"
+import { EventForm } from "./event/EventForm.js"
+import { ProfileProvider } from "./auth/ProfileProvider.js"
+import { Profile } from "./auth/Profile.js"
+
 
 export const ApplicationViews = () => {
     return <>
@@ -16,26 +17,29 @@ export const ApplicationViews = () => {
             lineHeight: "1.75rem"
         }}>
             <GameProvider>
+                <Route exact path="/">
+                    <GameList />
+                </Route>
+                <Route exact path="/games/new">
+                    <GameForm />
+                </Route>
+                <Route exact path="/games/:gameId(\d+)/update">
+                    <GameForm />
+                </Route>
                 <EventProvider>
-                    <ProfileProvider>
-                        <Route exact path="/profile">
-                            <Profile />
-                        </Route>
-                    <Route exact path="/games">
-                        <GameList />
-                    </Route>
-                    <Route exact path="/games/new">
-                        <GameForm />
-                    </Route>
-                    <Route exact path="/Events">
+                    <Route exact path="/events">
                         <EventList />
                     </Route>
-                    <Route exact path="/Events/New">
+                    <Route exact path="/events/new">
                         <EventForm />
                     </Route>
-                    </ProfileProvider>
                 </EventProvider>
             </GameProvider>
+            <ProfileProvider>
+                <Route exact path="/profile">
+                    <Profile />
+                </Route>
+            </ProfileProvider>
         </main>
     </>
 }
